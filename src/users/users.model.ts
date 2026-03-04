@@ -22,6 +22,6 @@ export class User extends Model<User, UserCreationsAttrs> {
   @Column({type: DataType.BOOLEAN, defaultValue: false})
   declare online: boolean;
 
-  @Column({type: DataType.STRING, allowNull: false})
+  @Column({type: DataType.STRING, allowNull: false, defaultValue: ''})
   declare lastMessage: string;
 }
