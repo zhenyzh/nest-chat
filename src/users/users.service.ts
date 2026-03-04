@@ -18,4 +18,8 @@ export class UsersService {
   async getUserByEmail(email: string) {
     return await this.usersRepository.findOne({where: {email}, include: {all: true}});
   }
+
+  async getUserById(id: string) {
+    return await this.usersRepository.findOne({where: {id}, include: {all: true}});
+  }
 }

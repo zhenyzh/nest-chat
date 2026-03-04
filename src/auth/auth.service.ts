@@ -1,39 +1,57 @@
 import {HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
-import {JwtService} from '@nestjs/jwt';
-import bcrypt from 'node_modules/bcryptjs';
-
-import type {CreateUserDto} from '../users/dto/create-user.dto';
+import bcrypt from 'bcryptjs';
 import {UsersService} from '../users/users.service';
-import type {User} from '../users/users.model';
+import {TokensService} from '../token/tokens.service';
+import type {CreateUserDto} from '../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
-    private jwtService: JwtService,
+    private tokensService: TokensService,
   ) {}
 
-  async login(userDto: CreateUserDto) {
-    const user = await this.validateUser(userDto);
-    if (!user) return;
-    return this.generateToken(user);
-  }
-
   async registration(userDto: CreateUserDto) {
-    const candidate = await this.userService.getUserByEmail(userDto.email);
+    const candidate = await this.validateUser(userDto);
     if (candidate) {
       throw new HttpException('Пользователь с таким email уже существует', HttpStatus.BAD_REQUEST);
     }
     const hashPassword = bcrypt.hashSync(userDto.password, 5);
     const user = await this.userService.createUser({...userDto, password: hashPassword});
-    return this.generateToken(user);
+    const token = this.tokensService.generateTokens({id: user.id, email: user.email});
+    await this.tokensService.saveToken(user.id, token.refreshToken);
+    return {user, ...token};
   }
 
-  private generateToken(user: User) {
-    const payload = {id: user.id, email: user.email};
-    return {
-      token: this.jwtService.sign(payload),
-    };
+  async login(userDto: CreateUserDto) {
+    const user = await this.validateUser(userDto);
+    if (!user) return;
+
+    const tokens = this.tokensService.generateTokens({id: user.id, email: user.email});
+    await this.tokensService.saveToken(user.id, tokens.refreshToken);
+
+    return {user, ...tokens};
+  }
+
+  async logout(refreshToken: string) {
+    await this.tokensService.removeToken(refreshToken);
+  }
+
+  async refresh(refreshToken: string) {
+    if (!refreshToken) throw new UnauthorizedException();
+
+    const userData = this.tokensService.validateRefreshToken(refreshToken);
+    const tokenFromDb = await this.tokensService.findToken(refreshToken);
+
+    if (!userData || !tokenFromDb) throw new UnauthorizedException();
+
+    const user = await this.userService.getUserById(userData.id);
+    if (!user) throw new UnauthorizedException();
+
+    const tokens = this.tokensService.generateTokens({id: user.id, email: user.email});
+    await this.tokensService.saveToken(user.id, tokens.refreshToken);
+
+    return {user, ...tokens};
   }
 
   private async validateUser(userDto: CreateUserDto) {

@@ -6,13 +6,23 @@ import {AuthService} from './auth.service';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Post('/registration')
+  registration(@Body() userDto: CreateUserDto) {
+    return this.authService.registration(userDto);
+  }
+
   @Post('/login')
   login(@Body() userDto: CreateUserDto) {
     return this.authService.login(userDto);
   }
 
-  @Post('/registration')
-  registration(@Body() userDto: CreateUserDto) {
-    return this.authService.registration(userDto);
+  @Post('/logout')
+  logout(@Body() refreshToken: string) {
+    return this.authService.logout(refreshToken);
+  }
+
+  @Post('/refresh')
+  refresh(@Body() refreshToken: string) {
+    return this.authService.refresh(refreshToken);
   }
 }
