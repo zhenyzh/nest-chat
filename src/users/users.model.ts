@@ -18,7 +18,4 @@ export class User extends Model<User, UserCreationsAttrs> {
 
   @Column({type: DataType.STRING, allowNull: false})
   declare password: string;
-
-  @Column({type: DataType.BOOLEAN, defaultValue: false})
-  declare online: boolean;
 }
