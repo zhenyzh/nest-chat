@@ -17,12 +17,12 @@ export class AuthController {
   }
 
   @Post('/logout')
-  logout(@Body() refreshToken: string) {
+  logout(@Body('refreshToken') refreshToken: string) {
     return this.authService.logout(refreshToken);
   }
 
   @Post('/refresh')
-  refresh(@Body() refreshToken: string) {
+  refresh(@Body('refreshToken') refreshToken: string) {
     return this.authService.refresh(refreshToken);
   }
 }

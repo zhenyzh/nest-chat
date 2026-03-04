@@ -34,7 +34,9 @@ export class AuthService {
   }
 
   async logout(refreshToken: string) {
+    if (!refreshToken) throw new UnauthorizedException();
     await this.tokensService.removeToken(refreshToken);
+    return {message: 'Вы успешно вышли из системы'};
   }
 
   async refresh(refreshToken: string) {
