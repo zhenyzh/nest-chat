@@ -1,4 +1,4 @@
-import {Controller, Post, Body, Res, Req} from '@nestjs/common';
+import { Controller, Post, Body, Res, Req, Get } from '@nestjs/common';
 import type {Response, Request} from 'express';
 import {AuthService} from './auth.service';
 import type {CreateUserDto} from '../users/dto/create-user.dto';
@@ -41,7 +41,7 @@ export class AuthController {
     return {message: 'Выход выполнен успешно'};
   }
 
-  @Post('refresh')
+  @Get('refresh')
   async refresh(@Req() req: Request, @Res({passthrough: true}) res: Response) {
     const cookieRefreshToken = req.cookies?.['refreshToken'];
     const {user, accessToken, refreshToken} = await this.authService.refresh(cookieRefreshToken);
