@@ -16,18 +16,18 @@ export class AuthController {
 
   @Post('registration')
   async registration(@Body() dto: CreateUserDto, @Res({passthrough: true}) res: Response) {
-    const {user, accessToken, refreshToken} = await this.authService.registration(dto);
+    const {refreshToken} = await this.authService.registration(dto);
     this.setRefreshTokenCookie(res, refreshToken);
 
-    return {user, accessToken};
+    return {message: 'Успешная регистрация'};
   }
 
   @Post('login')
   async login(@Body() dto: CreateUserDto, @Res({passthrough: true}) res: Response) {
-    const {user, accessToken, refreshToken} = await this.authService.login(dto);
+    const {accessToken, refreshToken} = await this.authService.login(dto);
     this.setRefreshTokenCookie(res, refreshToken);
 
-    return {user, accessToken};
+    return {accessToken};
   }
 
   @Post('logout')
@@ -44,10 +44,10 @@ export class AuthController {
   @Get('refresh')
   async refresh(@Req() req: Request, @Res({passthrough: true}) res: Response) {
     const cookieRefreshToken = req.cookies?.['refreshToken'];
-    const {user, accessToken, refreshToken} = await this.authService.refresh(cookieRefreshToken);
+    const {accessToken, refreshToken} = await this.authService.refresh(cookieRefreshToken);
     this.setRefreshTokenCookie(res, refreshToken);
 
-    return {user, accessToken};
+    return {accessToken};
   }
 
   private setRefreshTokenCookie(res: Response, token: string) {
