@@ -24,10 +24,10 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() dto: CreateUserDto, @Res({passthrough: true}) res: Response) {
-    const {user, accessToken, refreshToken} = await this.authService.login(dto);
+    const {accessToken, refreshToken} = await this.authService.login(dto);
     this.setRefreshTokenCookie(res, refreshToken);
 
-    return {user, accessToken};
+    return {accessToken};
   }
 
   @Post('logout')
