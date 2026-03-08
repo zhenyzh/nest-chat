@@ -22,4 +22,11 @@ export class UsersService {
   async getUserById(id: string) {
     return await this.usersRepository.findOne({where: {id}, include: {all: true}});
   }
+
+  async deleteUserById(id: string) {
+    const user = await this.usersRepository.findByPk(id);
+
+    if (!user) throw new Error('User not found');
+    await user.destroy();
+  }
 }
