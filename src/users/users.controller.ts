@@ -1,4 +1,5 @@
-import {Body, Controller, Get, Post, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Post, Req, UseGuards} from '@nestjs/common';
+import {type Request} from 'express';
 import {type CreateUserDto} from './dto/create-user.dto';
 import {UsersService} from './users.service';
 import {JwtAuthGuard} from '../auth/jwt-auth.guard';
@@ -16,5 +17,12 @@ export class UsersController {
   @Get()
   geAllUsers() {
     return this.usersService.getAllUsers();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  getMe(@Req() req: Request) {
+    const user = (req as any).user;
+    return this.usersService.getUserById(user.id);
   }
 }
