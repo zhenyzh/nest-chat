@@ -4,12 +4,6 @@ import {AuthService} from './auth.service';
 import type {CreateUserDto} from '../users/dto/create-user.dto';
 import {TOKEN} from '../../utils/token';
 
-interface TokenResponse {
-  user: any;
-  accessToken: string;
-  refreshToken: string;
-}
-
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
