@@ -5,7 +5,6 @@ import {UsersModule} from './users/users.module';
 import {ConfigModule} from '@nestjs/config';
 import {User} from './users/users.entity';
 import {AuthModule} from './auth/auth.module';
-import {TokensService} from './token/tokens.service';
 import {Token} from './token/tokens.entity';
 import { ChatsModule } from './chats/chats.module';
 import { ChatUsersService } from './chat-users/chat-users.service';

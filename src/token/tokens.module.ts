@@ -1,10 +1,11 @@
-import {Module} from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {Token} from './tokens.entity';
 import {TokensService} from './tokens.service';
 import {JwtModule} from '@nestjs/jwt';
 import {TOKEN} from '../../utils/token';
 
+@Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([Token]),
@@ -14,6 +15,6 @@ import {TOKEN} from '../../utils/token';
     }),
   ],
   providers: [TokensService],
-  exports: [TokensService],
+  exports: [TokensService, JwtModule],
 })
 export class TokensModule {}

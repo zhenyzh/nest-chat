@@ -1,7 +1,7 @@
 import {Module} from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import {MessagesService} from './messages.service';
 import {Message} from './messages.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Message])],
