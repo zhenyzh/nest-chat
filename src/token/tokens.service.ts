@@ -1,11 +1,17 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
-import {Token} from './tokens.model';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
+import {Token} from './tokens.entity';
 import {TOKEN} from '../../utils/token';
 
 @Injectable()
 export class TokensService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    @InjectRepository(Token)
+    private tokenRepository: Repository<Token>,
+  ) {}
 
   generateTokens(payload: {id: number; email: string}) {
     const accessToken = this.jwtService.sign(payload, {
@@ -22,20 +28,21 @@ export class TokensService {
   }
 
   async saveToken(userId: number, refreshToken: string) {
-    const token = await Token.findOne({where: {userId}});
+    const token = await this.tokenRepository.findOne({where: {userId}});
     if (token) {
       token.refreshToken = refreshToken;
-      return token.save();
+      return this.tokenRepository.save(token);
     }
-    return Token.create({userId, refreshToken});
+    const newToken = this.tokenRepository.create({userId, refreshToken});
+    return this.tokenRepository.save(newToken);
   }
 
   async removeToken(refreshToken: string) {
-    return Token.destroy({where: {refreshToken}});
+    return this.tokenRepository.delete({refreshToken});
   }
 
   async findToken(refreshToken: string) {
-    return Token.findOne({where: {refreshToken}});
+    return this.tokenRepository.findOne({where: {refreshToken}});
   }
 
   validateRefreshToken(token: string) {

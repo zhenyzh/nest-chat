@@ -1,40 +1,43 @@
 import {Module} from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
 import {UsersModule} from './users/users.module';
 import {ConfigModule} from '@nestjs/config';
-import {SequelizeModule} from '@nestjs/sequelize';
-import {User} from './users/users.model';
+import {User} from './users/users.entity';
 import {AuthModule} from './auth/auth.module';
 import {TokensService} from './token/tokens.service';
-import {Token} from './token/tokens.model';
+import {Token} from './token/tokens.entity';
 import { ChatsModule } from './chats/chats.module';
 import { ChatUsersService } from './chat-users/chat-users.service';
 import { ChatUsersModule } from './chat-users/chat-users.module';
 import { MessagesController } from './messages/messages.controller';
 import { MessagesModule } from './messages/messages.module';
-import { Chat } from './chats/chats.model';
-import { ChatUser } from './chat-users/chat-users.model';
-import { Message } from './messages/messages.model';
+import { Chat } from './chats/chats.entity';
+import { ChatUser } from './chat-users/chat-users.entity';
+import { Message } from './messages/messages.entity';
+import { TokensModule } from './token/tokens.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({envFilePath: `.${process.env.NODE_ENV}.env`}),
-    SequelizeModule.forRoot({
-      dialect: 'postgres',
+    TypeOrmModule.forRoot({
+      type: 'postgres',
       host: process.env.POSTGRES_HOST,
       port: Number(process.env.POSTGRES_PORT),
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Token, Chat, ChatUser, Message ],
-      autoLoadModels: true,
+      entities: [User, Token, Chat, ChatUser, Message ],
+      synchronize: true,
     }),
     UsersModule,
     AuthModule,
     ChatsModule,
     ChatUsersModule,
     MessagesModule,
+    TokensModule
   ],
-  providers: [TokensService, ChatUsersService],
+  providers: [ChatUsersService],
   controllers: [MessagesController],
 })
 export class AppModule {}

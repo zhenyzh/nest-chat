@@ -1,24 +1,29 @@
 import {Injectable} from '@nestjs/common';
-import {InjectModel} from '@nestjs/sequelize';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
 import type {SendMessageDto} from './dto/send-message.dto';
-import {Message} from './messages.model';
+import {Message} from './messages.entity';
 
 @Injectable()
 export class MessagesService {
-  constructor(@InjectModel(Message) private messageRepository: typeof Message) {}
+  constructor(
+    @InjectRepository(Message)
+    private messageRepository: Repository<Message>,
+  ) {}
 
   async sendMessage(dto: SendMessageDto) {
-    return await this.messageRepository.create({
+    const message = this.messageRepository.create({
       chatId: dto.chatId,
       senderId: dto.senderId,
       text: dto.text,
     });
+    return await this.messageRepository.save(message);
   }
 
   async getMessages(chatId: number) {
-    return await this.messageRepository.findAll({
+    return await this.messageRepository.find({
       where: {chatId},
-      order: [['createdAt', 'ASC']],
+      order: {createdAt: 'ASC'},
     });
   }
 }

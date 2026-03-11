@@ -1,38 +1,34 @@
 import {Injectable} from '@nestjs/common';
-import {InjectModel} from '@nestjs/sequelize';
-import {Chat} from './chats.model';
-import {ChatUser} from '../chat-users/chat-users.model';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
+import { Chat } from './chats.entity';
+import { ChatUser } from '../chat-users/chat-users.entity';
+
 
 @Injectable()
 export class ChatsService {
   constructor(
-    @InjectModel(Chat) private chat: typeof Chat,
-    @InjectModel(ChatUser) private chatUser: typeof ChatUser,
+    @InjectRepository(Chat)
+    private chatRepository: Repository<Chat>,
+    @InjectRepository(ChatUser)
+    private chatUserRepository: Repository<ChatUser>,
   ) {}
 
   async openChat(userId1: number, userId2: number) {
-    const existingChat = await this.chat.findOne({
-      include: [
-        {
-          model: ChatUser,
-          where: {userId: userId1},
-          attributes: [],
-        },
-        {
-          model: ChatUser,
-          where: {userId: userId2},
-          attributes: [],
-        },
-      ],
-    });
+    const existingChat = await this.chatRepository
+      .createQueryBuilder('chat')
+      .innerJoin('chat.chatUsers', 'cu1', 'cu1.userId = :userId1', {userId1})
+      .innerJoin('chat.chatUsers', 'cu2', 'cu2.userId = :userId2', {userId2})
+      .getOne();
 
     if (existingChat) {
       return {chatId: existingChat.id};
     }
 
-    const newChat = await this.chat.create();
+    const newChat = this.chatRepository.create();
+    await this.chatRepository.save(newChat);
 
-    await this.chatUser.bulkCreate([
+    await this.chatUserRepository.save([
       {chatId: newChat.id, userId: userId1},
       {chatId: newChat.id, userId: userId2},
     ]);

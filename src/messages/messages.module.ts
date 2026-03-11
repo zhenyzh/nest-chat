@@ -1,10 +1,10 @@
 import {Module} from '@nestjs/common';
 import {MessagesService} from './messages.service';
-import {SequelizeModule} from '@nestjs/sequelize';
-import {Message} from './messages.model';
+import {Message} from './messages.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Message])],
+  imports: [TypeOrmModule.forFeature([Message])],
   providers: [MessagesService],
   exports: [MessagesService],
 })
