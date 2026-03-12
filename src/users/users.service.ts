@@ -17,14 +17,14 @@ export class UsersService {
   }
 
   async getAllUsers() {
-    return await this.usersRepository.find();
+    return await this.usersRepository.find({select: ['id', 'name', 'email']});
   }
 
   async getUserByEmail(email: string) {
-    return await this.usersRepository.findOne({where: {email}});
+    return await this.usersRepository.findOne({where: {email}, select: ['id', 'name', 'email']});
   }
 
   async getUserById(id: number) {
-    return await this.usersRepository.findOne({where: {id}});
+    return await this.usersRepository.findOne({where: {id}, select: ['id', 'name', 'email']});
   }
 }

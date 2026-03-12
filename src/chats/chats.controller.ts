@@ -6,7 +6,7 @@ export class ChatsController {
   constructor(private chatsService: ChatsService) {}
 
   @Post('open')
-  openChat(@Body() body: {userId1: number; userId2: number}) {
-    return this.chatsService.openChat(body.userId1, body.userId2);
+  openChat(@Body() body: {userIdMe: number; userIdOther: number}) {
+    return this.chatsService.openChat(body.userIdMe, body.userIdOther);
   }
 }
