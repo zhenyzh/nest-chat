@@ -11,7 +11,7 @@ export class Chat {
   createdAt: Date;
 
   @OneToMany(() => ChatUser, chatUser => chatUser.chat)
-  users: ChatUser[];
+  chatUsers: ChatUser[];
 
   @OneToMany(() => Message, message => message.chat)
   messages: Message[];

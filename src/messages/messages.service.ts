@@ -3,6 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import type {SendMessageDto} from './dto/send-message.dto';
 import {Message} from './messages.entity';
+import {UserDto} from '../users/dto/user.dto';
 
 @Injectable()
 export class MessagesService {
@@ -21,9 +22,15 @@ export class MessagesService {
   }
 
   async getMessages(chatId: number) {
-    return await this.messageRepository.find({
+    const messages = await this.messageRepository.find({
       where: {chatId},
+      relations: ['sender'],
       order: {createdAt: 'ASC'},
     });
+
+    return messages.map(m => ({
+      ...m,
+      sender: new UserDto(m.sender),
+    }));
   }
 }
