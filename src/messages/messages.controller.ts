@@ -6,7 +6,7 @@ import  {MessagesService} from './messages.service';
 export class MessagesController {
   constructor(private messagesService: MessagesService) {}
 
-  @Post()
+  @Post('/send-message')
   sendMessage(@Body() dto: SendMessageDto) {
     return this.messagesService.sendMessage(dto);
   }
