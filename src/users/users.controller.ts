@@ -15,8 +15,9 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  geAllUsers() {
-    return this.usersService.getAllUsers();
+  geAllUsers(@Req() req: Request) {
+    const user = (req as any).user;
+    return this.usersService.getAllUsers(user.id);
   }
 
   @UseGuards(JwtAuthGuard)

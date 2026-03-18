@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {Not, Repository} from 'typeorm';
 import {User} from './users.entity';
 import type {CreateUserDto} from './dto/create-user.dto';
 
@@ -16,8 +16,13 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async getAllUsers() {
-    return await this.usersRepository.find({select: ['id', 'name', 'email']});
+  async getAllUsers(excludeUserId: number) {
+    return await this.usersRepository.find({
+      select: ['id', 'name', 'email'],
+      where: {
+        id: Not(excludeUserId),
+      },
+    });
   }
 
   async getUserByEmail(email: string) {
