@@ -33,7 +33,7 @@ export class MessagesService {
       ...savedMessage,
       sender: new UserDto(sender!),
     };
-    console.log({fullMessage});
+
     this.chatGateway.sendMessageToChat(fullMessage);
 
     return fullMessage;
