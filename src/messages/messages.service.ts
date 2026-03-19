@@ -22,6 +22,7 @@ export class MessagesService {
       chatId: dto.chatId,
       senderId: dto.senderId,
       text: dto.text,
+      clientId: dto?.clientId
     });
 
     const savedMessage = await this.messageRepository.save(message);
@@ -30,12 +31,13 @@ export class MessagesService {
 
     const fullMessage = {
       ...savedMessage,
+      clientId: savedMessage.clientId,
       sender: new UserDto(sender!),
     };
 
     this.chatGateway.sendMessageToChat(fullMessage);
 
-    return message;
+    return fullMessage;
   }
 
   async getMessages(chatId: number) {

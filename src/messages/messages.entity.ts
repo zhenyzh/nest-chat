@@ -20,6 +20,9 @@ export class Message {
   @Column()
   senderId: number;
 
+  @Column({ nullable: true })
+  clientId?: string;
+
   @Column({type: 'text', nullable: false})
   text: string;
 
