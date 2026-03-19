@@ -31,10 +31,9 @@ export class MessagesService {
 
     const fullMessage = {
       ...savedMessage,
-      clientId: savedMessage.clientId,
       sender: new UserDto(sender!),
     };
-
+    console.log({fullMessage});
     this.chatGateway.sendMessageToChat(fullMessage);
 
     return fullMessage;
