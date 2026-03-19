@@ -21,6 +21,12 @@ export class ChatGateway {
     client.emit('join_chat_success', chatId);
   }
 
+  @SubscribeMessage('leave_chat')
+  handleLeave(@MessageBody() chatId: number, @ConnectedSocket() client: Socket) {
+    client.leave(`chat_${chatId}`);
+    client.emit('leave_chat_success', chatId);
+  }
+
   sendMessageToChat(message: SendMessageDto) {
     this.server.to(`chat_${message.chatId}`).emit('chat_message_new', message);
   }
