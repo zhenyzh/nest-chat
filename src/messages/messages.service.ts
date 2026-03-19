@@ -4,12 +4,17 @@ import {Repository} from 'typeorm';
 import type {SendMessageDto} from './dto/send-message.dto';
 import {Message} from './messages.entity';
 import {UserDto} from '../users/dto/user.dto';
+import {ChatGateway} from '../chat-gateway/chat.gateway';
+import {User} from '../users/users.entity';
 
 @Injectable()
 export class MessagesService {
   constructor(
     @InjectRepository(Message)
     private messageRepository: Repository<Message>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    private chatGateway: ChatGateway,
   ) {}
 
   async sendMessage(dto: SendMessageDto) {
@@ -18,7 +23,19 @@ export class MessagesService {
       senderId: dto.senderId,
       text: dto.text,
     });
-    return await this.messageRepository.save(message);
+
+    const savedMessage = await this.messageRepository.save(message);
+
+    const sender = await this.userRepository.findOneBy({id: savedMessage.senderId});
+
+    const fullMessage = {
+      ...savedMessage,
+      sender: new UserDto(sender!),
+    };
+
+    this.chatGateway.sendMessageToChat(fullMessage);
+
+    return message;
   }
 
   async getMessages(chatId: number) {

@@ -1,20 +1,20 @@
 import {Module} from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import {TypeOrmModule} from '@nestjs/typeorm';
 
 import {UsersModule} from './users/users.module';
 import {ConfigModule} from '@nestjs/config';
 import {User} from './users/users.entity';
 import {AuthModule} from './auth/auth.module';
 import {Token} from './token/tokens.entity';
-import { ChatsModule } from './chats/chats.module';
-import { ChatUsersService } from './chat-users/chat-users.service';
-import { ChatUsersModule } from './chat-users/chat-users.module';
-import { MessagesController } from './messages/messages.controller';
-import { MessagesModule } from './messages/messages.module';
-import { Chat } from './chats/chats.entity';
-import { ChatUser } from './chat-users/chat-users.entity';
-import { Message } from './messages/messages.entity';
-import { TokensModule } from './token/tokens.module';
+import {ChatsModule} from './chats/chats.module';
+import {ChatUsersService} from './chat-users/chat-users.service';
+import {ChatUsersModule} from './chat-users/chat-users.module';
+import {MessagesController} from './messages/messages.controller';
+import {MessagesModule} from './messages/messages.module';
+import {Chat} from './chats/chats.entity';
+import {ChatUser} from './chat-users/chat-users.entity';
+import {Message} from './messages/messages.entity';
+import {TokensModule} from './token/tokens.module';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { TokensModule } from './token/tokens.module';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User, Token, Chat, ChatUser, Message ],
+      entities: [User, Token, Chat, ChatUser, Message],
       synchronize: true,
     }),
     UsersModule,
@@ -34,7 +34,7 @@ import { TokensModule } from './token/tokens.module';
     ChatsModule,
     ChatUsersModule,
     MessagesModule,
-    TokensModule
+    TokensModule,
   ],
   providers: [ChatUsersService],
   controllers: [MessagesController],
