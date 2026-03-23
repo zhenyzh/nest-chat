@@ -30,4 +30,22 @@ export class ChatGateway {
   sendMessageToChat(message: SendMessageDto) {
     this.server.to(`chat_${message.chatId}`).emit('chat_message_new', message);
   }
+
+  @SubscribeMessage('typing')
+  handleTyping(
+    @MessageBody() data: {chatId: number; userId: number},
+    @ConnectedSocket() client: Socket,
+  ) {
+    client.to(`chat_${data.chatId}`).emit('user_typing', {userId: data.userId});
+  }
+
+  @SubscribeMessage('stop_typing')
+  handleStopTyping(
+    @MessageBody() data: {chatId: number; userId: number},
+    @ConnectedSocket() client: Socket,
+  ) {
+    client.to(`chat_${data.chatId}`).emit('user_stop_typing', {
+      userId: data.userId,
+    });
+  }
 }
