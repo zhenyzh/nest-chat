@@ -56,7 +56,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.onlineUsers.set(userId, sockets);
     this.socketToUser.set(client.id, userId);
 
-    this.server.emit('user_online', userId);
+    client.broadcast.emit('user_online', userId);
   }
 
   @SubscribeMessage('get_online_users')
