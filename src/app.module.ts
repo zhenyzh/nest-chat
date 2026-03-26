@@ -1,6 +1,6 @@
 import {Module} from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
-
+import {EventEmitterModule} from '@nestjs/event-emitter';
 import {UsersModule} from './users/users.module';
 import {ConfigModule} from '@nestjs/config';
 import {User} from './users/users.entity';
@@ -15,6 +15,7 @@ import {Chat} from './chats/chats.entity';
 import {ChatUser} from './chat-users/chat-users.entity';
 import {Message} from './messages/messages.entity';
 import {TokensModule} from './token/tokens.module';
+import {ChatModuleGateway} from './chat-gateway/chat.module';
 
 @Module({
   imports: [
@@ -35,6 +36,8 @@ import {TokensModule} from './token/tokens.module';
     ChatUsersModule,
     MessagesModule,
     TokensModule,
+    ChatModuleGateway,
+    EventEmitterModule.forRoot(),
   ],
   providers: [ChatUsersService],
   controllers: [MessagesController],

@@ -4,8 +4,8 @@ import {Repository} from 'typeorm';
 import type {SendMessageDto} from './dto/send-message.dto';
 import {Message} from './messages.entity';
 import {UserDto} from '../users/dto/user.dto';
-import {ChatGateway} from '../chat-gateway/chat.gateway';
 import {User} from '../users/users.entity';
+import {EventEmitter2} from '@nestjs/event-emitter';
 
 @Injectable()
 export class MessagesService {
@@ -14,7 +14,7 @@ export class MessagesService {
     private messageRepository: Repository<Message>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private chatGateway: ChatGateway,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async sendMessage(dto: SendMessageDto) {
@@ -22,7 +22,8 @@ export class MessagesService {
       chatId: dto.chatId,
       senderId: dto.senderId,
       text: dto.text,
-      clientId: dto?.clientId
+      clientId: dto?.clientId,
+      isSent: true,
     });
 
     const savedMessage = await this.messageRepository.save(message);
@@ -34,7 +35,7 @@ export class MessagesService {
       sender: new UserDto(sender!),
     };
 
-    this.chatGateway.sendMessageToChat(fullMessage);
+    this.eventEmitter.emit('send_message_emitter', fullMessage);
 
     return fullMessage;
   }
@@ -50,5 +51,15 @@ export class MessagesService {
       ...m,
       sender: new UserDto(m.sender),
     }));
+  }
+
+  async markAsDelivered(messageId: number) {
+    await this.messageRepository.update(messageId, {isDelivered: true});
+    return await this.messageRepository.findOneBy({id: messageId});
+  }
+
+  async markAsRead(messageId: number) {
+    await this.messageRepository.update(messageId, {isRead: true});
+    return await this.messageRepository.findOneBy({id: messageId});
   }
 }

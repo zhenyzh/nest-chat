@@ -26,6 +26,15 @@ export class Message {
   @Column({type: 'text', nullable: false})
   text: string;
 
+  @Column({ default: false })
+  isSent: boolean;
+
+  @Column({ default: false })
+  isDelivered: boolean;
+
+  @Column({ default: false })
+  isRead: boolean;
+
   @CreateDateColumn({type: 'timestamp'})
   createdAt: Date;
 
