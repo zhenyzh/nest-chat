@@ -7,10 +7,10 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { OnEvent } from '@nestjs/event-emitter';
+import {OnEvent} from '@nestjs/event-emitter';
 import {Server, Socket} from 'socket.io';
 import type {SendMessageDto} from '../messages/dto/send-message.dto';
-import  { MessagesService } from '../messages/messages.service';
+import {MessagesService} from '../messages/messages.service';
 
 @WebSocketGateway({
   cors: {origin: '*'},
@@ -18,7 +18,8 @@ import  { MessagesService } from '../messages/messages.service';
   pingTimeout: 5000,
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private  messagesService: MessagesService) {}
+  constructor(private messagesService: MessagesService) {}
+
   @WebSocketServer()
   server: Server;
 
@@ -67,7 +68,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.emit('online_users', Array.from(this.onlineUsers.keys()));
   }
 
-  // ********************************************************************************** //
+  // ---------------join_chat----------------------------//
 
   @SubscribeMessage('join_chat')
   handleJoin(@MessageBody() chatId: number, @ConnectedSocket() client: Socket) {
@@ -81,16 +82,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.emit('leave_chat_success', chatId);
   }
 
-  @OnEvent('send_message_emitter')
+  // ---------------event emitter----------------------------//
+  @OnEvent('message.send')
   handleMessageCreated(message: SendMessageDto) {
-    this.server
-      .to(`chat_${message.chatId}`)
-      .emit('chat_message_new', message);
+    this.server.to(`chat_${message.chatId}`).emit('chat_message_new', message);
   }
 
   @SubscribeMessage('message_delivered')
   handleDelivered(
-    @MessageBody() data: { messageId: number; chatId: number },
+    @MessageBody() data: {messageId: number; chatId: number},
     @ConnectedSocket() client: Socket,
   ) {
     this.messagesService.markAsDelivered(data.messageId);
@@ -99,13 +99,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('message_read')
   handleRead(
-    @MessageBody() data: { messageId: number; chatId: number },
+    @MessageBody() data: {messageId: number; chatId: number},
     @ConnectedSocket() client: Socket,
   ) {
     this.messagesService.markAsRead(data.messageId);
     this.server.to(`chat_${data.chatId}`).emit('message_read', data.messageId);
   }
 
+  // ---------------typing----------------------------//
 
   @SubscribeMessage('typing')
   handleTyping(

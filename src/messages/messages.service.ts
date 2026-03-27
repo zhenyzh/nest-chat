@@ -35,7 +35,7 @@ export class MessagesService {
       sender: new UserDto(sender!),
     };
 
-    this.eventEmitter.emit('send_message_emitter', fullMessage);
+    this.eventEmitter.emit('message.send', fullMessage);
 
     return fullMessage;
   }
