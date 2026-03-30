@@ -31,6 +31,7 @@ export class ChatUsersService {
         .getOne();
 
       let lastMessageText = '';
+      let typedMe: boolean = false;
       let createdAt: Date | null = null;
       let isSent = false;
       let isDelivered = false;
@@ -46,6 +47,7 @@ export class ChatUsersService {
         });
 
         if (lastMessage) {
+          typedMe = lastMessage.senderId === userId;
           createdAt = lastMessage.createdAt;
           lastMessageText = lastMessage.text;
           isSent = lastMessage.isSent;
@@ -66,6 +68,7 @@ export class ChatUsersService {
       result.push({
         id: otherUser.id,
         name: otherUser.name,
+        typedMe,
         lastMessage: lastMessageText,
         createdAt,
         isSent,
