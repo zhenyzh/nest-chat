@@ -7,7 +7,6 @@ import {User} from './users/users.entity';
 import {AuthModule} from './auth/auth.module';
 import {Token} from './token/tokens.entity';
 import {ChatsModule} from './chats/chats.module';
-import {ChatUsersService} from './chat-users/chat-users.service';
 import {ChatUsersModule} from './chat-users/chat-users.module';
 import {MessagesController} from './messages/messages.controller';
 import {MessagesModule} from './messages/messages.module';
@@ -39,7 +38,6 @@ import {ChatModuleGateway} from './chat-gateway/chat.module';
     ChatModuleGateway,
     EventEmitterModule.forRoot(),
   ],
-  providers: [ChatUsersService],
   controllers: [MessagesController],
 })
 export class AppModule {}
