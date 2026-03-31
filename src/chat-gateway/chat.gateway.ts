@@ -11,6 +11,7 @@ import {OnEvent} from '@nestjs/event-emitter';
 import {Server, Socket} from 'socket.io';
 import type {SendMessageDto} from '../messages/dto/send-message.dto';
 import {MessagesService} from '../messages/messages.service';
+import {ChatUsersService} from '../chat-users/chat-users.service';
 
 @WebSocketGateway({
   cors: {origin: '*'},
@@ -18,7 +19,10 @@ import {MessagesService} from '../messages/messages.service';
   pingTimeout: 5000,
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private messagesService: MessagesService) {}
+  constructor(
+    private messagesService: MessagesService,
+    private chatUsersService: ChatUsersService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -82,28 +86,55 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.emit('leave_chat_success', chatId);
   }
 
+  async notifyUserWithChats(userId: number) {
+    const usersWithChats = await this.chatUsersService.getUsersWithChats(userId);
+
+    const sockets = this.onlineUsers.get(userId) || [];
+    sockets.forEach(socketId => {
+      this.server.to(socketId).emit('users_with_chats_update', usersWithChats);
+    });
+  }
+
   // ---------------event emitter----------------------------//
   @OnEvent('message.send')
-  handleMessageCreated(message: SendMessageDto) {
+  async handleMessageCreated(message: SendMessageDto) {
     this.server.to(`chat_${message.chatId}`).emit('chat_message_new', message);
+
+    const chatUsers = await this.chatUsersService.getChatUsers(message.chatId);
+    for (const user of chatUsers) {
+      if (user.id !== message.senderId) {
+        await this.notifyUserWithChats(user.id);
+      }
+    }
   }
 
   @SubscribeMessage('message_delivered')
-  handleDelivered(
+  async handleDelivered(
     @MessageBody() data: {messageId: number; chatId: number},
     @ConnectedSocket() client: Socket,
   ) {
     this.messagesService.markAsDelivered(data.messageId);
     this.server.to(`chat_${data.chatId}`).emit('message_delivered', data.messageId);
+
+    // уведомляем участников чата об обновлении
+    const chatUsers = await this.chatUsersService.getChatUsers(data.chatId);
+    for (const user of chatUsers) {
+      await this.notifyUserWithChats(user.id);
+    }
   }
 
   @SubscribeMessage('message_read')
-  handleRead(
+  async handleRead(
     @MessageBody() data: {messageId: number; chatId: number},
     @ConnectedSocket() client: Socket,
   ) {
     this.messagesService.markAsRead(data.messageId);
     this.server.to(`chat_${data.chatId}`).emit('message_read', data.messageId);
+
+    const chatUsers = await this.chatUsersService.getChatUsers(data.chatId);
+    for (const user of chatUsers) {
+      await this.notifyUserWithChats(user.id);
+    }
   }
 
   // ---------------typing----------------------------//

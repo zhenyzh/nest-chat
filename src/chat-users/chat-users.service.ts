@@ -5,6 +5,7 @@ import {ChatUser} from './chat-users.entity';
 import {Message} from '../messages/messages.entity';
 import type {ChatUserDto} from './dto/chat-users.dto';
 import {UsersService} from '../users/users.service';
+import { Chat } from '../chats/chats.entity';
 
 @Injectable()
 export class ChatUsersService {
@@ -14,6 +15,8 @@ export class ChatUsersService {
     @InjectRepository(Message)
     private messageRepository: Repository<Message>,
     private userService: UsersService,
+    @InjectRepository(Chat)
+    private chatRepository: Repository<Chat>,
   ) {}
 
   async getUsersWithChats(userId: number) {
@@ -35,7 +38,7 @@ export class ChatUsersService {
       let createdAt: Date | null = null;
       let isSent = false;
       let isDelivered = false;
-      let isRead = true;
+      let isRead = false;
       let countUnreadMessage = 0;
 
       if (chatUser?.chat) {
@@ -50,8 +53,16 @@ export class ChatUsersService {
           typedMe = lastMessage.senderId === userId;
           createdAt = lastMessage.createdAt;
           lastMessageText = lastMessage.text;
-          isSent = lastMessage.isSent;
-          isDelivered = lastMessage.isDelivered;
+
+          if (typedMe) {
+            isSent = lastMessage.isSent;
+            isDelivered = lastMessage.isDelivered;
+            isRead = lastMessage.isRead;
+          } else {
+            isSent = false;
+            isDelivered = false;
+            isRead = false;
+          }
         }
 
         countUnreadMessage = await this.messageRepository.count({
@@ -62,7 +73,9 @@ export class ChatUsersService {
           },
         });
 
-        isRead = countUnreadMessage === 0;
+        if (lastMessage) {
+          isRead = lastMessage.isRead;
+        }
       }
 
       result.push({
@@ -79,5 +92,13 @@ export class ChatUsersService {
     }
 
     return result;
+  }
+
+  async getChatUsers(chatId: number) {
+    const chat = await this.chatRepository.findOne({
+      where: {id: chatId},
+      relations: ['chatUsers', 'chatUsers.user'],
+    });
+    return chat?.chatUsers.map(cu => cu.user) || [];
   }
 }
