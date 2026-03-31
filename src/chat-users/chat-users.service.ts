@@ -5,7 +5,7 @@ import {ChatUser} from './chat-users.entity';
 import {Message} from '../messages/messages.entity';
 import type {ChatUserDto} from './dto/chat-users.dto';
 import {UsersService} from '../users/users.service';
-import { Chat } from '../chats/chats.entity';
+import {Chat} from '../chats/chats.entity';
 
 @Injectable()
 export class ChatUsersService {
@@ -100,5 +100,24 @@ export class ChatUsersService {
       relations: ['chatUsers', 'chatUsers.user'],
     });
     return chat?.chatUsers.map(cu => cu.user) || [];
+  }
+
+  async ensureChatUserExists(chatId: number, userId: number) {
+    const existing = await this.chatUserRepository.findOne({
+      where: {chatId, userId},
+    });
+
+    if (!existing) {
+      const chat = await this.chatRepository.findOneBy({id: chatId});
+      if (!chat) {
+        throw new Error(`Chat ${chatId} not found`);
+      }
+      
+      await this.chatUserRepository.save({
+        chatId,
+        userId,
+        chat,
+      });
+    }
   }
 }

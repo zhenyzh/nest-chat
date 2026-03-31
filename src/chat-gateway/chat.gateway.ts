@@ -101,10 +101,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(`chat_${message.chatId}`).emit('chat_message_new', message);
 
     const chatUsers = await this.chatUsersService.getChatUsers(message.chatId);
+
     for (const user of chatUsers) {
-      if (user.id !== message.senderId) {
-        await this.notifyUserWithChats(user.id);
-      }
+      await this.chatUsersService.ensureChatUserExists(message.chatId, user.id);
+      await this.notifyUserWithChats(user.id); // обновляем последнее сообщение для себя
     }
   }
 
