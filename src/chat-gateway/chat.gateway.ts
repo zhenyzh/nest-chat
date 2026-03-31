@@ -91,7 +91,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const sockets = this.onlineUsers.get(userId) || [];
     sockets.forEach(socketId => {
-      this.server.to(socketId).emit('users_with_chats_update', usersWithChats);
+      this.server.to(socketId).emit('chat_users_update', usersWithChats);
     });
   }
 
