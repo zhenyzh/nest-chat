@@ -1,7 +1,7 @@
 export class ChatUserDto {
   id: number;
   name: string;
-  typedMe: boolean;
+  typedI: boolean;
   createdAt: Date | null;
   lastMessage: string;
   isSent: boolean;
