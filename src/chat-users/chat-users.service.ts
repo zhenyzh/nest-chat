@@ -81,6 +81,7 @@ export class ChatUsersService {
       result.push({
         id: otherUser.id,
         name: otherUser.name,
+        avatarUrl: otherUser.avatarUrl,
         typedI,
         lastMessage: lastMessageText,
         createdAt,
