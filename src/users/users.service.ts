@@ -1,10 +1,11 @@
+import fs from 'fs';
+import path from 'path';
+import * as process from 'node:process';
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Not, Repository} from 'typeorm';
 import {User} from './users.entity';
 import type {CreateUserDto} from './dto/create-user.dto';
-import fs from 'fs';
-import path from 'path';
 
 @Injectable()
 export class UsersService {
@@ -39,7 +40,7 @@ export class UsersService {
   }
 
   async handleUpload(userId: number, file: Express.Multer.File) {
-    const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
+    const uploadsDir = path.join(process.cwd(), 'uploads');
     if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, {recursive: true});
 
     const fileName = `${Date.now()}-${file.originalname}`;

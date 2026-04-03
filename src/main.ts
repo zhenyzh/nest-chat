@@ -1,8 +1,9 @@
 import {NestFactory} from '@nestjs/core';
 import {AppModule} from './app.module';
 import cookieParser from 'cookie-parser';
-import { join } from 'path';
-import type { NestExpressApplication } from '@nestjs/platform-express';
+import {join} from 'path';
+import type {NestExpressApplication} from '@nestjs/platform-express';
+import * as process from 'node:process';
 
 async function start() {
   const PORT = process.env.PORT ?? 5000;
@@ -15,7 +16,7 @@ async function start() {
     credentials: true,
   });
 
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads/',
   });
 
