@@ -41,7 +41,6 @@ export class UsersController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
-    console.log('FILE:', file)
     const userId = (req as any).user.id;
     return this.usersService.handleUpload(userId, file);
   }

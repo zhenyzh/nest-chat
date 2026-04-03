@@ -1,3 +1,4 @@
+import {EventEmitter2} from '@nestjs/event-emitter';
 import fs from 'fs';
 import path from 'path';
 import * as process from 'node:process';
@@ -12,6 +13,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async createUser(dto: CreateUserDto) {
@@ -50,6 +52,8 @@ export class UsersService {
 
     const avatarUrl = `uploads/${fileName}`;
     await this.usersRepository.update(userId, {avatarUrl});
+
+    this.eventEmitter.emit('users.avatar_updated', {userId, avatarUrl});
 
     return {avatarUrl};
   }

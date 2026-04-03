@@ -108,6 +108,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
+  @OnEvent('users.avatar_updated')
+  handleAvatarUpdated(data: {userId: number; avatarUrl: string}) {
+    this.server.emit('user_avatar_updated', data);
+  }
+
   @SubscribeMessage('message_delivered')
   async handleDelivered(
     @MessageBody() data: {messageId: number; chatId: number},
