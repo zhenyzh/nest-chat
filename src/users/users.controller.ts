@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param, ParseIntPipe,
   Post,
   Req,
   UploadedFile,
@@ -43,5 +44,10 @@ export class UsersController {
   uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
     const userId = (req as any).user.id;
     return this.usersService.handleUpload(userId, file);
+  }
+
+  @Get('user/:id')
+  getUserFromChat(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.getUserById(id);
   }
 }
