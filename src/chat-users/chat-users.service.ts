@@ -6,6 +6,7 @@ import {Message} from '../messages/messages.entity';
 import type {ChatUserDto} from './dto/chat-users.dto';
 import {UsersService} from '../users/users.service';
 import {Chat} from '../chats/chats.entity';
+import {sortDataByCreatedAt} from '../../utils/sort-data-by-created-at';
 
 @Injectable()
 export class ChatUsersService {
@@ -92,7 +93,7 @@ export class ChatUsersService {
       });
     }
 
-    return result;
+    return sortDataByCreatedAt(result);
   }
 
   async getChatUsers(chatId: number) {
@@ -113,7 +114,7 @@ export class ChatUsersService {
       if (!chat) {
         throw new Error(`Chat ${chatId} not found`);
       }
-      
+
       await this.chatUserRepository.save({
         chatId,
         userId,
