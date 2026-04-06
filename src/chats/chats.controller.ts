@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Post, Req, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, Req, UseGuards} from '@nestjs/common';
 import {ChatsService} from './chats.service';
 import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 import type {Request} from 'express';
@@ -9,8 +9,15 @@ export class ChatsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('open')
-  openChat(@Body() body: {userIdOther: number}, @Req() req: Request) {
+  openChat(@Body() body: {recipientId: number}, @Req() req: Request) {
     const user = (req as any).user;
-    return this.chatsService.openChat(user.id, body.userIdOther);
+    return this.chatsService.openChat(user.id, body.recipientId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('current/:recipientId')
+  getChat(@Param('recipientId') recipientId: number, @Req() req: Request) {
+    const user = (req as any).user;
+    return this.chatsService.getChat(user.id, recipientId);
   }
 }
