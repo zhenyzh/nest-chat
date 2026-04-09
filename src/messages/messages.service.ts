@@ -54,12 +54,23 @@ export class MessagesService {
   }
 
   async markAsDelivered(messageId: number) {
-    await this.messageRepository.update(messageId, {isDelivered: true});
+    await this.messageRepository.update({id: messageId}, {isDelivered: true});
     return await this.messageRepository.findOneBy({id: messageId});
   }
 
   async markAsRead(messageId: number) {
-    await this.messageRepository.update(messageId, {isRead: true});
+    await this.messageRepository.update({id: messageId}, {isRead: true});
     return await this.messageRepository.findOneBy({id: messageId});
+  }
+
+  async markChatAsRead(chatId: number, userId: number) {
+    await this.messageRepository
+      .createQueryBuilder()
+      .update(Message)
+      .set({isRead: true})
+      .where('chatId = :chatId', {chatId})
+      .andWhere('senderId != :userId', {userId})
+      .andWhere('isRead = false')
+      .execute();
   }
 }
