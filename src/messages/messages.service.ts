@@ -67,7 +67,7 @@ export class MessagesService {
     await this.messageRepository
       .createQueryBuilder()
       .update(Message)
-      .set({isRead: true})
+      .set({isSent: true, isRead: true, isDelivered: true})
       .where('chatId = :chatId', {chatId})
       .andWhere('senderId != :userId', {userId})
       .andWhere('isRead = false')
