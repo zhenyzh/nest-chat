@@ -20,8 +20,8 @@ export class ChatUsersService {
     private chatRepository: Repository<Chat>,
   ) {}
 
-  async getUsersWithChats(userId: number) {
-    const allUsers = await this.userService.getAllUsers(userId);
+  async getUsersWithChats(userId: number, search?: string) {
+    const allUsers = await this.userService.getAllUsers(userId, search);
 
     const result: ChatUserDto[] = [];
 

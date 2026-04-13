@@ -1,6 +1,6 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import {Controller, Get, Query, Req, UseGuards} from '@nestjs/common';
 import {ChatUsersService} from './chat-users.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 
 @Controller('chat-users')
 export class ChatUsersController {
@@ -8,7 +8,7 @@ export class ChatUsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  getUsersWithChats(@Req() req) {
-    return this.chatUsersService.getUsersWithChats(req.user.id);
+  getUsersWithChats(@Req() req, @Query('search') search?: string) {
+    return this.chatUsersService.getUsersWithChats(req.user.id, search);
   }
 }

@@ -4,7 +4,7 @@ import path from 'path';
 import * as process from 'node:process';
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Not, Repository} from 'typeorm';
+import {ILike, Not, Repository} from 'typeorm';
 import {User} from './users.entity';
 import type {CreateUserDto} from './dto/create-user.dto';
 
@@ -21,11 +21,14 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async getAllUsers(excludeUserId: number) {
+  async getAllUsers(excludeUserId: number, search?: string) {
     return await this.usersRepository.find({
       select: ['id', 'name', 'email', 'avatarUrl'],
       where: {
         id: Not(excludeUserId),
+        ...(search && {
+          name: ILike(`%${search}%`),
+        }),
       },
     });
   }
