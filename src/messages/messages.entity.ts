@@ -20,19 +20,22 @@ export class Message {
   @Column()
   senderId: number;
 
-  @Column({ nullable: true })
+  @Column({nullable: true})
   clientId?: string;
 
   @Column({type: 'text', nullable: false})
   text: string;
 
-  @Column({ default: false })
+  @Column('simple-json', { nullable: true, default: [] })
+  attachments: any[];
+
+  @Column({default: false})
   isSent: boolean;
 
-  @Column({ default: false })
+  @Column({default: false})
   isDelivered: boolean;
 
-  @Column({ default: false })
+  @Column({default: false})
   isRead: boolean;
 
   @CreateDateColumn({type: 'timestamp'})

@@ -15,6 +15,7 @@ import {ChatUser} from './chat-users/chat-users.entity';
 import {Message} from './messages/messages.entity';
 import {TokensModule} from './token/tokens.module';
 import {ChatModuleGateway} from './chat-gateway/chat.module';
+import { FilesController } from './files-message/files-message.controller';
 
 @Module({
   imports: [
@@ -38,6 +39,6 @@ import {ChatModuleGateway} from './chat-gateway/chat.module';
     ChatModuleGateway,
     EventEmitterModule.forRoot(),
   ],
-  controllers: [MessagesController],
+  controllers: [MessagesController, FilesController],
 })
 export class AppModule {}

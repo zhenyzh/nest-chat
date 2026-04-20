@@ -24,6 +24,7 @@ export class MessagesService {
       text: dto.text,
       clientId: dto?.clientId,
       isSent: true,
+      attachments: dto.attachments ?? [],
     });
 
     const savedMessage = await this.messageRepository.save(message);
