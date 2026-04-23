@@ -35,6 +35,7 @@ export class ChatUsersService {
         .getOne();
 
       let lastMessageText = '';
+      let attachments: any[] = [];
       let typedI: boolean = false;
       let createdAt: Date | null = null;
       let isSent = false;
@@ -54,6 +55,7 @@ export class ChatUsersService {
           typedI = lastMessage.senderId === userId;
           createdAt = lastMessage.createdAt;
           lastMessageText = lastMessage.text;
+          attachments = lastMessage.attachments ?? [];
 
           if (typedI) {
             isSent = lastMessage.isSent;
@@ -85,6 +87,7 @@ export class ChatUsersService {
         avatarUrl: otherUser.avatarUrl,
         typedI,
         lastMessage: lastMessageText,
+        attachments,
         createdAt,
         isSent,
         isDelivered,
