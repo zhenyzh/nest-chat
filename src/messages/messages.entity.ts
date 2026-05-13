@@ -29,6 +29,15 @@ export class Message {
   @Column('simple-json', { nullable: true, default: [] })
   attachments: any[];
 
+  @Column('simple-json', { nullable: true })
+  audio?: {
+    id: string;
+    url: string;
+    name: string;
+    size: number;
+    type: 'audio';
+  };
+
   @Column({default: false})
   isSent: boolean;
 

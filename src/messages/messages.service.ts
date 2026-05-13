@@ -6,6 +6,8 @@ import {Message} from './messages.entity';
 import {UserDto} from '../users/dto/user.dto';
 import {User} from '../users/users.entity';
 import {EventEmitter2} from '@nestjs/event-emitter';
+import fs from 'fs';
+import path from 'path';
 
 @Injectable()
 export class MessagesService {
@@ -73,5 +75,51 @@ export class MessagesService {
       .andWhere('senderId != :userId', {userId})
       .andWhere('isRead = false')
       .execute();
+  }
+
+  async sendAudio(
+    dto: {chatId: number; senderId: number; clientId?: string},
+    file: Express.Multer.File,
+  ) {
+    const fileUrl = await this.uploadAudio(file);
+
+    const message = this.messageRepository.create({
+      chatId: dto.chatId,
+      senderId: dto.senderId,
+      clientId: dto.clientId,
+      text:'',
+      audio: {
+        id: `${Date.now()}`,
+        url: fileUrl,
+        name: file.originalname,
+        type: 'audio',
+        size: file.size,
+      },
+      isSent: true,
+    });
+
+    const saved = await this.messageRepository.save(message);
+
+    const sender = await this.userRepository.findOneBy({
+      id: saved.senderId,
+    });
+
+    const fullMessage = {
+      ...saved,
+      sender: new UserDto(sender!),
+    };
+
+    this.eventEmitter.emit('message.send', fullMessage);
+
+    return fullMessage;
+  }
+
+  async uploadAudio(file: Express.Multer.File) {
+    const filename = `${Date.now()}-${file.originalname}`;
+    const uploadDir = path.join(process.cwd(), 'uploads/audio');
+    await fs.promises.mkdir(uploadDir, { recursive: true });
+    const filePath = path.join(uploadDir, filename);
+    await fs.promises.writeFile(filePath, file.buffer);
+    return `http://localhost:5000/uploads/audio/${filename}`;
   }
 }
