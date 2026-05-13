@@ -6,6 +6,7 @@ export class ChatUserDto {
   createdAt: Date | null;
   lastMessage: string;
   attachments: any[];
+  audio: any;
   isSent: boolean;
   isDelivered: boolean;
   isRead: boolean;

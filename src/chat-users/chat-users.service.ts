@@ -35,6 +35,7 @@ export class ChatUsersService {
         .getOne();
 
       let lastMessageText = '';
+      let audio= {}
       let attachments: any[] = [];
       let typedI: boolean = false;
       let createdAt: Date | null = null;
@@ -56,7 +57,7 @@ export class ChatUsersService {
           createdAt = lastMessage.createdAt;
           lastMessageText = lastMessage.text;
           attachments = lastMessage.attachments ?? [];
-
+          audio = lastMessage.audio as any;
           if (typedI) {
             isSent = lastMessage.isSent;
             isDelivered = lastMessage.isDelivered;
@@ -88,6 +89,7 @@ export class ChatUsersService {
         typedI,
         lastMessage: lastMessageText,
         attachments,
+        audio,
         createdAt,
         isSent,
         isDelivered,
