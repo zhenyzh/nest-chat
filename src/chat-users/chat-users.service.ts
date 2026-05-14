@@ -35,7 +35,7 @@ export class ChatUsersService {
         .getOne();
 
       let lastMessageText = '';
-      let audio= {}
+      let audio= null
       let attachments: any[] = [];
       let typedI: boolean = false;
       let createdAt: Date | null = null;
