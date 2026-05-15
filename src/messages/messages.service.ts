@@ -84,8 +84,8 @@ export class MessagesService {
     const fileUrl = await this.uploadAudio(file);
 
     const message = this.messageRepository.create({
-      chatId: dto.chatId,
-      senderId: dto.senderId,
+      chatId: Number(dto.chatId),
+      senderId: Number(dto.senderId),
       clientId: dto.clientId,
       text:'',
       audio: {
